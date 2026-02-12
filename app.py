@@ -75,10 +75,6 @@ def register():
 # ---------------- GENERATE QR ----------------
 @app.route("/generate_qr/<int:pid>")
 def generate_qr(pid):
-    # ✅ IMPORTANT FIX: folder yahin check/create hoga
-    if not os.path.exists(QR_FOLDER):
-        os.makedirs(QR_FOLDER)
-
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute("SELECT name FROM patient WHERE id=?", (pid,))
@@ -88,19 +84,19 @@ def generate_qr(pid):
     if patient is None:
         return "Patient not found"
 
-    patient_name = patient[0].replace(" ", "")
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    patient_name = patient[0]
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     qr_url = request.host_url + "scan/" + str(pid)
-    qr_img = qrcode.make(qr_url)
 
-    qr_filename = f"QR_{patient_name}_{timestamp}.png"
-    qr_path = os.path.join(QR_FOLDER, qr_filename)
-    qr_img.save(qr_path)
+    # 🔥 QR generate in memory (NO FILE SAVE)
+    qr_img = qrcode.make(qr_url)
+    img_path = os.path.join(BASE_DIR, "static", "temp_qr.png")
+    qr_img.save(img_path)
 
     return render_template(
         "qr_generate.html",
-        qr_image=f"qr_codes/{qr_filename}",
+        qr_image="temp_qr.png",
         qr_url=qr_url,
         patient_name=patient_name,
         created_time=timestamp
@@ -158,3 +154,4 @@ def debug():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
