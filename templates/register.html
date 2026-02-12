@@ -1,55 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register</title>
+    <meta charset="UTF-8">
+    <title>Register Patient</title>
+
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
 
-<div class="container mt-5">
-    <div class="card shadow p-4">
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
 
-        <h3 class="text-center mb-3">📝 Patient Registration</h3>
+            <div class="card shadow p-4">
+                <h3 class="text-center text-primary mb-3">
+                    📝 Register Emergency Patient Details
+                </h3>
 
-        <form method="POST">
-            <div class="mb-2">
-                <label>Name</label>
-                <input type="text" name="name" class="form-control" required>
+                <p class="text-center text-muted mb-4">
+                    Fill correct medical details to generate Emergency QR Code
+                </p>
+
+                <form method="POST">
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label class="form-label">👤 Patient Name</label>
+                        <input type="text" name="name" class="form-control" required placeholder="Enter full name">
+                    </div>
+
+                    <!-- Age -->
+                    <div class="mb-3">
+                        <label class="form-label">🎂 Age</label>
+                        <input type="number" name="age" class="form-control" required placeholder="Enter age">
+                    </div>
+
+                    <!-- Blood Group -->
+                    <div class="mb-3">
+                        <label class="form-label">🩸 Blood Group</label>
+                        <select name="blood_group" class="form-select" required>
+                            <option value="">Select Blood Group</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                    </div>
+
+                    <!-- Allergies -->
+                    <div class="mb-3">
+                        <label class="form-label">⚠️ Allergies (if any)</label>
+                        <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Dust">
+                    </div>
+
+                    <!-- Diseases -->
+                    <div class="mb-3">
+                        <label class="form-label">🦠 Existing Diseases</label>
+                        <input type="text" name="diseases" class="form-control" placeholder="e.g. Diabetes, Heart">
+                    </div>
+
+                    <!-- Medicines -->
+                    <div class="mb-3">
+                        <label class="form-label">💊 Ongoing Medicines</label>
+                        <input type="text" name="medicines" class="form-control" placeholder="e.g. Insulin, BP tablets">
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="mb-4">
+                        <label class="form-label">📞 Emergency Contact Number</label>
+                        <input type="tel" name="emergency_contact" class="form-control" required placeholder="10-digit phone number">
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            ✅ Generate Emergency QR Code
+                        </button>
+                    </div>
+
+                </form>
+
+                <hr>
+
+                <p class="text-center text-muted small">
+                    ⚠️ Please ensure details are accurate for emergency use
+                </p>
+
             </div>
 
-            <div class="mb-2">
-                <label>Age</label>
-                <input type="number" name="age" class="form-control" required>
-            </div>
-
-            <div class="mb-2">
-                <label>Blood Group</label>
-                <input type="text" name="blood_group" class="form-control">
-            </div>
-
-            <div class="mb-2">
-                <label>Allergies</label>
-                <input type="text" name="allergies" class="form-control">
-            </div>
-
-            <div class="mb-2">
-                <label>Diseases</label>
-                <input type="text" name="diseases" class="form-control">
-            </div>
-
-            <div class="mb-2">
-                <label>Medicines</label>
-                <input type="text" name="medicines" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label>Emergency Contact</label>
-                <input type="text" name="emergency_contact" class="form-control">
-            </div>
-
-            <button class="btn btn-success w-100">Generate Emergency QR</button>
-        </form>
-
+        </div>
     </div>
 </div>
 
