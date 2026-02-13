@@ -3,7 +3,7 @@ import sqlite3
 import qrcode
 import os
 from datetime import datetime
-import pytz   # ⭐ IST support
+import pytz   # IST support
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +33,13 @@ def init_db():
             allergies TEXT,
             diseases TEXT,
             medicines TEXT,
-            emergency_contact TEXT,
+
+            emergency_contact_1 TEXT,
+            emergency_relation_1 TEXT,
+
+            emergency_contact_2 TEXT,
+            emergency_relation_2 TEXT,
+
             created_at TEXT
         )
     """)
@@ -57,18 +63,27 @@ def register():
         allergies = request.form["allergies"]
         diseases = request.form["diseases"]
         medicines = request.form["medicines"]
-        emergency_contact = request.form["emergency_contact"]
+
+        emergency_contact_1 = request.form["emergency_contact_1"]
+        emergency_relation_1 = request.form["emergency_relation_1"]
+
+        emergency_contact_2 = request.form.get("emergency_contact_2")
+        emergency_relation_2 = request.form.get("emergency_relation_2")
 
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
         cur.execute("""
             INSERT INTO patient
-            (name, age, blood_group, allergies, diseases, medicines, emergency_contact, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (name, age, blood_group, allergies, diseases, medicines,
+             emergency_contact_1, emergency_relation_1,
+             emergency_contact_2, emergency_relation_2,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            name, age, blood_group, allergies,
-            diseases, medicines, emergency_contact,
-            get_ist_time()   # ⭐ IST time stored
+            name, age, blood_group, allergies, diseases, medicines,
+            emergency_contact_1, emergency_relation_1,
+            emergency_contact_2, emergency_relation_2,
+            get_ist_time()
         ))
         conn.commit()
         patient_id = cur.lastrowid
@@ -91,11 +106,10 @@ def generate_qr(pid):
         return "Patient not found"
 
     patient_name = patient[0]
-    created_time = get_ist_time()  # ⭐ IST shown on QR page
+    created_time = get_ist_time()
 
     qr_url = request.host_url + "scan/" + str(pid)
 
-    # 🔥 QR generated dynamically (cloud-safe)
     qr_img = qrcode.make(qr_url)
     qr_img.save(QR_TEMP_PATH)
 
@@ -145,7 +159,7 @@ def scan(pid):
 def find_hospital():
     return redirect("https://www.google.com/maps/search/hospital+near+me/")
 
-# ---------------- DEBUG (OPTIONAL) ----------------
+# ---------------- DEBUG ----------------
 @app.route("/debug")
 def debug():
     conn = sqlite3.connect(DB_PATH)
