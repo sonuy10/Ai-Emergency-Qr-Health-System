@@ -3,14 +3,20 @@ import sqlite3
 import qrcode
 import os
 from datetime import datetime
+import pytz   # ⭐ IST support
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
-QR_FOLDER = os.path.join(BASE_DIR, "static", "qr_codes")
+QR_TEMP_PATH = os.path.join(BASE_DIR, "static", "temp_qr.png")
 
 app = Flask(__name__)
+
+# ---------------- IST TIME FUNCTION ----------------
+def get_ist_time():
+    ist = pytz.timezone("Asia/Kolkata")
+    return datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
 
 # ---------------- DATABASE INIT ----------------
 def init_db():
@@ -62,7 +68,7 @@ def register():
         """, (
             name, age, blood_group, allergies,
             diseases, medicines, emergency_contact,
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            get_ist_time()   # ⭐ IST time stored
         ))
         conn.commit()
         patient_id = cur.lastrowid
@@ -85,21 +91,20 @@ def generate_qr(pid):
         return "Patient not found"
 
     patient_name = patient[0]
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    created_time = get_ist_time()  # ⭐ IST shown on QR page
 
     qr_url = request.host_url + "scan/" + str(pid)
 
-    # 🔥 QR generate in memory (NO FILE SAVE)
+    # 🔥 QR generated dynamically (cloud-safe)
     qr_img = qrcode.make(qr_url)
-    img_path = os.path.join(BASE_DIR, "static", "temp_qr.png")
-    qr_img.save(img_path)
+    qr_img.save(QR_TEMP_PATH)
 
     return render_template(
         "qr_generate.html",
         qr_image="temp_qr.png",
         qr_url=qr_url,
         patient_name=patient_name,
-        created_time=timestamp
+        created_time=created_time
     )
 
 # ---------------- SCAN QR ----------------
@@ -154,4 +159,3 @@ def debug():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
