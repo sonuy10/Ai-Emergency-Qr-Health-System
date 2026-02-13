@@ -12,7 +12,7 @@
 
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-9">
 
             <div class="card shadow p-4">
                 <h3 class="text-center text-primary mb-3">
@@ -25,7 +25,7 @@
 
                 <form method="POST">
 
-                    <!-- Name -->
+                    <!-- Patient Name -->
                     <div class="mb-3">
                         <label class="form-label">👤 Patient Name</label>
                         <input type="text" name="name" class="form-control" required placeholder="Enter full name">
@@ -66,15 +66,64 @@
                     </div>
 
                     <!-- Medicines -->
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label">💊 Ongoing Medicines</label>
                         <input type="text" name="medicines" class="form-control" placeholder="e.g. Insulin, BP tablets">
                     </div>
 
-                    <!-- Emergency Contact -->
-                    <div class="mb-4">
-                        <label class="form-label">📞 Emergency Contact Number</label>
-                        <input type="tel" name="emergency_contact" class="form-control" required placeholder="10-digit phone number">
+                    <hr>
+
+                    <!-- Emergency Contact 1 -->
+                    <h5 class="text-danger mb-3">🚨 Emergency Contact 1</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Relation</label>
+                            <select name="emergency_relation_1" class="form-select" required>
+                                <option value="">Select</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Brother</option>
+                                <option>Sister</option>
+                                <option>Wife</option>
+                                <option>Husband</option>
+                                <option>Guardian</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label">Contact Number</label>
+                            <input type="tel" name="emergency_contact_1"
+                                   class="form-control"
+                                   required
+                                   placeholder="10-digit phone number">
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact 2 -->
+                    <h5 class="text-danger mb-3">🚨 Emergency Contact 2 (Optional)</h5>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Relation</label>
+                            <select name="emergency_relation_2" class="form-select">
+                                <option value="">Select</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Brother</option>
+                                <option>Sister</option>
+                                <option>Wife</option>
+                                <option>Husband</option>
+                                <option>Guardian</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label">Contact Number</label>
+                            <input type="tel" name="emergency_contact_2"
+                                   class="form-control"
+                                   placeholder="10-digit phone number (optional)">
+                        </div>
                     </div>
 
                     <!-- Submit -->
