@@ -3,7 +3,9 @@ import sqlite3
 import qrcode
 import os
 from datetime import datetime
-import pytz   # IST support
+import pytz
+import smtplib
+from email.message import EmailMessage
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,6 +14,10 @@ DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
 QR_TEMP_PATH = os.path.join(BASE_DIR, "static", "temp_qr.png")
 
 app = Flask(__name__)
+
+# ---------------- EMAIL ENV VARIABLES ----------------
+EMAIL_ADDRESS = os.environ.get("EMAIL_USER")
+EMAIL_PASSWORD = os.environ.get("EMAIL_PASS")
 
 # ---------------- IST TIME FUNCTION ----------------
 def get_ist_time():
@@ -121,6 +127,36 @@ def generate_qr(pid):
         created_time=created_time
     )
 
+# ---------------- EMAIL FUNCTION ----------------
+def send_qr_email(to_email):
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        return "Email credentials not configured"
+
+    msg = EmailMessage()
+    msg['Subject'] = "Your Emergency Medical QR Code"
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = to_email
+
+    msg.set_content("Attached is your Emergency Medical QR Code. Please download and keep it safe.")
+
+    with open(QR_TEMP_PATH, 'rb') as f:
+        file_data = f.read()
+        msg.add_attachment(file_data,
+                           maintype='image',
+                           subtype='png',
+                           filename="Emergency_QR.png")
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        smtp.send_message(msg)
+
+# ---------------- EMAIL ROUTE ----------------
+@app.route("/send_email", methods=["POST"])
+def send_email():
+    email = request.form["email"]
+    send_qr_email(email)
+    return redirect(request.referrer)
+
 # ---------------- SCAN QR ----------------
 @app.route("/scan/<int:pid>")
 def scan(pid):
@@ -133,7 +169,6 @@ def scan(pid):
     if patient is None:
         return "Invalid or expired QR Code"
 
-    # ---------- SIMPLE AI LOGIC ----------
     age = patient[2]
     diseases = (patient[5] or "").lower()
 
@@ -158,16 +193,6 @@ def scan(pid):
 @app.route("/find_hospital")
 def find_hospital():
     return redirect("https://www.google.com/maps/search/hospital+near+me/")
-
-# ---------------- DEBUG ----------------
-@app.route("/debug")
-def debug():
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM patient")
-    data = cur.fetchall()
-    conn.close()
-    return str(data)
 
 # ---------------- RUN APP ----------------
 if __name__ == "__main__":
