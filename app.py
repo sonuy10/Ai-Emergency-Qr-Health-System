@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 import sqlite3
 import qrcode
 import os
@@ -6,12 +6,13 @@ from datetime import datetime
 import pytz
 import smtplib
 from email.message import EmailMessage
+from PIL import Image, ImageDraw, ImageFont
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
-QR_TEMP_PATH = os.path.join(BASE_DIR, "static", "temp_qr.png")
+QR_FOLDER = os.path.join(BASE_DIR, "static")
 
 app = Flask(__name__)
 
@@ -39,13 +40,10 @@ def init_db():
             allergies TEXT,
             diseases TEXT,
             medicines TEXT,
-
             emergency_contact_1 TEXT,
             emergency_relation_1 TEXT,
-
             emergency_contact_2 TEXT,
             emergency_relation_2 TEXT,
-
             created_at TEXT
         )
     """)
@@ -63,21 +61,9 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        name = request.form["name"]
-        age = int(request.form["age"])
-        blood_group = request.form["blood_group"]
-        allergies = request.form["allergies"]
-        diseases = request.form["diseases"]
-        medicines = request.form["medicines"]
-
-        emergency_contact_1 = request.form["emergency_contact_1"]
-        emergency_relation_1 = request.form["emergency_relation_1"]
-
-        emergency_contact_2 = request.form.get("emergency_contact_2")
-        emergency_relation_2 = request.form.get("emergency_relation_2")
-
         conn = sqlite3.connect(DB_PATH)
         cur = conn.cursor()
+
         cur.execute("""
             INSERT INTO patient
             (name, age, blood_group, allergies, diseases, medicines,
@@ -86,11 +72,19 @@ def register():
              created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            name, age, blood_group, allergies, diseases, medicines,
-            emergency_contact_1, emergency_relation_1,
-            emergency_contact_2, emergency_relation_2,
+            request.form["name"],
+            int(request.form["age"]),
+            request.form["blood_group"],
+            request.form["allergies"],
+            request.form["diseases"],
+            request.form["medicines"],
+            request.form["emergency_contact_1"],
+            request.form["emergency_relation_1"],
+            request.form.get("emergency_contact_2"),
+            request.form.get("emergency_relation_2"),
             get_ist_time()
         ))
+
         conn.commit()
         patient_id = cur.lastrowid
         conn.close()
@@ -111,50 +105,82 @@ def generate_qr(pid):
     if patient is None:
         return "Patient not found"
 
-    patient_name = patient[0]
+    patient_name = patient[0].replace(" ", "_")
     created_time = get_ist_time()
 
     qr_url = request.host_url + "scan/" + str(pid)
 
-    qr_img = qrcode.make(qr_url)
-    qr_img.save(QR_TEMP_PATH)
+    # Generate QR
+    qr = qrcode.make(qr_url)
+    qr = qr.convert("RGB")
+
+    # Create bigger image with heading
+    width, height = qr.size
+    new_img = Image.new("RGB", (width, height + 80), "white")
+    new_img.paste(qr, (0, 80))
+
+    draw = ImageDraw.Draw(new_img)
+    draw.text((10, 20), "🚨 EMERGENCY MEDICAL QR – SCAN IMMEDIATELY", fill="red")
+
+    filename = f"Emergency_QR_{patient_name}.png"
+    file_path = os.path.join(QR_FOLDER, filename)
+    new_img.save(file_path)
 
     return render_template(
         "qr_generate.html",
-        qr_image="temp_qr.png",
+        qr_image=filename,
         qr_url=qr_url,
         patient_name=patient_name,
         created_time=created_time
     )
 
+# ---------------- DOWNLOAD QR ----------------
+@app.route("/download/<filename>")
+def download_file(filename):
+    path = os.path.join(QR_FOLDER, filename)
+    return send_file(path, as_attachment=True)
+
 # ---------------- EMAIL FUNCTION ----------------
-def send_qr_email(to_email):
+def send_qr_email(to_email, filename):
     if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-        return "Email credentials not configured"
+        return "Email not configured"
 
-    msg = EmailMessage()
-    msg['Subject'] = "Your Emergency Medical QR Code"
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = to_email
+    try:
+        path = os.path.join(QR_FOLDER, filename)
 
-    msg.set_content("Attached is your Emergency Medical QR Code. Please download and keep it safe.")
+        msg = EmailMessage()
+        msg["Subject"] = "🚨 Emergency Medical QR Code"
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = to_email
 
-    with open(QR_TEMP_PATH, 'rb') as f:
-        file_data = f.read()
-        msg.add_attachment(file_data,
-                           maintype='image',
-                           subtype='png',
-                           filename="Emergency_QR.png")
+        msg.set_content(
+            "Attached is your Emergency Medical QR Code.\n\n"
+            "Please download and keep it safe for emergency use."
+        )
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
+        with open(path, "rb") as f:
+            msg.add_attachment(
+                f.read(),
+                maintype="image",
+                subtype="png",
+                filename=filename
+            )
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+
+        return "Success"
+
+    except Exception as e:
+        print("Email Error:", e)
+        return "Failed"
 
 # ---------------- EMAIL ROUTE ----------------
-@app.route("/send_email", methods=["POST"])
-def send_email():
+@app.route("/send_email/<filename>", methods=["POST"])
+def send_email(filename):
     email = request.form["email"]
-    send_qr_email(email)
+    send_qr_email(email, filename)
     return redirect(request.referrer)
 
 # ---------------- SCAN QR ----------------
