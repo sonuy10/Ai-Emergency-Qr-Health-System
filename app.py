@@ -6,7 +6,7 @@ from datetime import datetime
 import pytz
 import smtplib
 from email.message import EmailMessage
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -110,17 +110,14 @@ def generate_qr(pid):
 
     qr_url = request.host_url + "scan/" + str(pid)
 
-    # Generate QR
-    qr = qrcode.make(qr_url)
-    qr = qr.convert("RGB")
+    qr = qrcode.make(qr_url).convert("RGB")
 
-    # Create bigger image with heading
     width, height = qr.size
     new_img = Image.new("RGB", (width, height + 80), "white")
     new_img.paste(qr, (0, 80))
 
     draw = ImageDraw.Draw(new_img)
-    draw.text((10, 20), "🚨 EMERGENCY MEDICAL QR – SCAN IMMEDIATELY", fill="red")
+    draw.text((10, 20), "EMERGENCY MEDICAL QR - SCAN IMMEDIATELY", fill="red")
 
     filename = f"Emergency_QR_{patient_name}.png"
     file_path = os.path.join(QR_FOLDER, filename)
@@ -140,22 +137,24 @@ def download_file(filename):
     path = os.path.join(QR_FOLDER, filename)
     return send_file(path, as_attachment=True)
 
-# ---------------- EMAIL FUNCTION ----------------
+# ---------------- EMAIL FUNCTION (FIXED + TIMEOUT) ----------------
 def send_qr_email(to_email, filename):
+
     if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-        return "Email not configured"
+        print("Email credentials missing")
+        return "Not Configured"
 
     try:
         path = os.path.join(QR_FOLDER, filename)
 
         msg = EmailMessage()
-        msg["Subject"] = "🚨 Emergency Medical QR Code"
+        msg["Subject"] = "Emergency Medical QR Code"
         msg["From"] = EMAIL_ADDRESS
         msg["To"] = to_email
 
         msg.set_content(
-            "Attached is your Emergency Medical QR Code.\n\n"
-            "Please download and keep it safe for emergency use."
+            "Attached is your Emergency Medical QR Code.\n"
+            "Please download and keep it safe."
         )
 
         with open(path, "rb") as f:
@@ -166,21 +165,24 @@ def send_qr_email(to_email, filename):
                 filename=filename
             )
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        # 🔥 Added timeout to prevent hanging
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
             smtp.send_message(msg)
 
+        print("Email sent successfully")
         return "Success"
 
     except Exception as e:
-        print("Email Error:", e)
+        print("EMAIL ERROR:", e)
         return "Failed"
 
 # ---------------- EMAIL ROUTE ----------------
 @app.route("/send_email/<filename>", methods=["POST"])
 def send_email(filename):
     email = request.form["email"]
-    send_qr_email(email, filename)
+    result = send_qr_email(email, filename)
+    print("Email status:", result)
     return redirect(request.referrer)
 
 # ---------------- SCAN QR ----------------
