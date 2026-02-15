@@ -110,34 +110,43 @@ def generate_qr(pid):
     qr_url = request.host_url + "scan/" + str(pid)
     qr = qrcode.make(qr_url).convert("RGB")
 
-    width, height = qr.size
+    qr_width, qr_height = qr.size
 
-    # Proper heading space (not too much)
-    header_height = 120
-    new_img = Image.new("RGB", (width, height + header_height), "white")
-    new_img.paste(qr, (0, header_height))
-
-    draw = ImageDraw.Draw(new_img)
-
-    # Use DejaVu font (works on Render)
+    # Load large bold font
     try:
-        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 42)
     except:
         font = ImageFont.load_default()
 
     line1 = "EMERGENCY MEDICAL QR"
     line2 = "SCAN IMMEDIATELY"
 
-    # Center align text
-    w1 = draw.textlength(line1, font=font)
-    w2 = draw.textlength(line2, font=font)
+    # Calculate text size
+    dummy_img = Image.new("RGB", (1, 1))
+    dummy_draw = ImageDraw.Draw(dummy_img)
 
-    x1 = (width - w1) / 2
-    x2 = (width - w2) / 2
+    text_width1 = dummy_draw.textlength(line1, font=font)
+    text_width2 = dummy_draw.textlength(line2, font=font)
 
-    # Reduced gap between lines
-    draw.text((x1, 20), line1, fill="red", font=font)
-    draw.text((x2, 65), line2, fill="red", font=font)
+    max_text_width = max(text_width1, text_width2)
+
+    # New image width = bigger of QR width or text width
+    final_width = int(max(qr_width, max_text_width) + 40)
+    header_height = 130
+
+    new_img = Image.new("RGB", (final_width, qr_height + header_height), "white")
+    draw = ImageDraw.Draw(new_img)
+
+    # Center text
+    x1 = (final_width - text_width1) / 2
+    x2 = (final_width - text_width2) / 2
+
+    draw.text((x1, 25), line1, fill="red", font=font)
+    draw.text((x2, 70), line2, fill="red", font=font)
+
+    # Center QR
+    qr_x = (final_width - qr_width) // 2
+    new_img.paste(qr, (qr_x, header_height))
 
     filename = f"Emergency_QR_{patient_name}.png"
     file_path = os.path.join(QR_FOLDER, filename)
@@ -150,7 +159,6 @@ def generate_qr(pid):
         patient_name=patient_name,
         created_time=created_time
     )
-
 
 # ---------------- DOWNLOAD QR ----------------
 @app.route("/download/<filename>")
@@ -255,5 +263,6 @@ def find_hospital():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
