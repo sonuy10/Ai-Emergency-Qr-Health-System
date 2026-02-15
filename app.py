@@ -4,7 +4,7 @@ import qrcode
 import os
 from datetime import datetime
 import pytz
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import requests
 import base64
 
@@ -108,15 +108,26 @@ def generate_qr(pid):
     created_time = get_ist_time()
 
     qr_url = request.host_url + "scan/" + str(pid)
-
     qr = qrcode.make(qr_url).convert("RGB")
 
     width, height = qr.size
-    new_img = Image.new("RGB", (width, height + 80), "white")
-    new_img.paste(qr, (0, 80))
+    new_img = Image.new("RGB", (width, height + 120), "white")
+    new_img.paste(qr, (0, 120))
 
     draw = ImageDraw.Draw(new_img)
-    draw.text((10, 20), "EMERGENCY MEDICAL QR - SCAN IMMEDIATELY", fill="red")
+
+    # Bigger font
+    try:
+        font = ImageFont.truetype("arial.ttf", 28)
+    except:
+        font = ImageFont.load_default()
+
+    text = "🚨 EMERGENCY MEDICAL QR - SCAN IMMEDIATELY"
+
+    text_width = draw.textlength(text, font=font)
+    text_x = (width - text_width) / 2
+
+    draw.text((text_x, 40), text, fill="red", font=font)
 
     filename = f"Emergency_QR_{patient_name}.png"
     file_path = os.path.join(QR_FOLDER, filename)
@@ -162,17 +173,13 @@ def send_qr_email(to_email, filename):
                 "name": "AI Emergency QR",
                 "email": "sonuyadava0506@gmail.com"
             },
-            "to": [
-                {"email": to_email}
-            ],
+            "to": [{"email": to_email}],
             "subject": "Emergency Medical QR Code",
             "htmlContent": "<p>Your Emergency Medical QR is attached.</p>",
-            "attachment": [
-                {
-                    "content": encoded_file,
-                    "name": filename
-                }
-            ]
+            "attachment": [{
+                "content": encoded_file,
+                "name": filename
+            }]
         }
 
         response = requests.post(url, json=payload, headers=headers)
