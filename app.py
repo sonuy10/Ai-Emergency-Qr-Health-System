@@ -93,7 +93,6 @@ def register():
     return render_template("register.html")
 
 # ---------------- GENERATE QR ----------------
-# ---------------- GENERATE QR ----------------
 @app.route("/generate_qr/<int:pid>")
 def generate_qr(pid):
     conn = sqlite3.connect(DB_PATH)
@@ -113,30 +112,32 @@ def generate_qr(pid):
 
     width, height = qr.size
 
-    # Extra space for BIG heading
-    new_img = Image.new("RGB", (width, height + 200), "white")
-    new_img.paste(qr, (0, 200))
+    # Proper heading space (not too much)
+    header_height = 120
+    new_img = Image.new("RGB", (width, height + header_height), "white")
+    new_img.paste(qr, (0, header_height))
 
     draw = ImageDraw.Draw(new_img)
 
-    # Try large font
+    # Use DejaVu font (works on Render)
     try:
-        font_big = ImageFont.truetype("arial.ttf", 48)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
     except:
-        font_big = ImageFont.load_default()
+        font = ImageFont.load_default()
 
-    line1 = "🚨 EMERGENCY MEDICAL QR"
+    line1 = "EMERGENCY MEDICAL QR"
     line2 = "SCAN IMMEDIATELY"
 
-    # Center align line 1
-    w1 = draw.textlength(line1, font=font_big)
-    x1 = (width - w1) / 2
-    draw.text((x1, 50), line1, fill="red", font=font_big)
+    # Center align text
+    w1 = draw.textlength(line1, font=font)
+    w2 = draw.textlength(line2, font=font)
 
-    # Center align line 2
-    w2 = draw.textlength(line2, font=font_big)
+    x1 = (width - w1) / 2
     x2 = (width - w2) / 2
-    draw.text((x2, 120), line2, fill="red", font=font_big)
+
+    # Reduced gap between lines
+    draw.text((x1, 20), line1, fill="red", font=font)
+    draw.text((x2, 65), line2, fill="red", font=font)
 
     filename = f"Emergency_QR_{patient_name}.png"
     file_path = os.path.join(QR_FOLDER, filename)
@@ -254,4 +255,5 @@ def find_hospital():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
