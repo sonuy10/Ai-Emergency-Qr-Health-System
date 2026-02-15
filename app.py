@@ -4,9 +4,9 @@ import qrcode
 import os
 from datetime import datetime
 import pytz
-import smtplib
-from email.message import EmailMessage
 from PIL import Image, ImageDraw
+import requests
+import base64
 
 # ---------------- BASIC PATH SETUP ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,9 +16,8 @@ QR_FOLDER = os.path.join(BASE_DIR, "static")
 
 app = Flask(__name__)
 
-# ---------------- BREVO SMTP ENV VARIABLES ----------------
-BREVO_USER = os.environ.get("BREVO_SMTP_USER")   # usually your Brevo login email
-BREVO_PASS = os.environ.get("BREVO_SMTP_PASS")   # SMTP key from Brevo
+# ---------------- BREVO API KEY ----------------
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
 
 # ---------------- IST TIME FUNCTION ----------------
 def get_ist_time():
@@ -137,46 +136,57 @@ def download_file(filename):
     path = os.path.join(QR_FOLDER, filename)
     return send_file(path, as_attachment=True)
 
-# ---------------- EMAIL FUNCTION (BREVO SMTP) ----------------
+# ---------------- EMAIL FUNCTION (BREVO API) ----------------
 def send_qr_email(to_email, filename):
 
-    if not BREVO_USER or not BREVO_PASS:
-        print("Brevo SMTP not configured")
+    if not BREVO_API_KEY:
+        print("Brevo API key missing")
         return "Not Configured"
 
     try:
         path = os.path.join(QR_FOLDER, filename)
 
-        msg = EmailMessage()
-        msg["Subject"] = "Emergency Medical QR Code"
-        msg["From"] = "AI Emergency QR <sonuyadava0506@gmail.com>"
-        msg["To"] = to_email
-
-        msg.set_content(
-            "Attached is your Emergency Medical QR Code.\n"
-            "Please download and keep it safe."
-        )
-
         with open(path, "rb") as f:
-            msg.add_attachment(
-                f.read(),
-                maintype="image",
-                subtype="png",
-                filename=filename
-            )
+            encoded_file = base64.b64encode(f.read()).decode()
 
-        with smtplib.SMTP("smtp-relay.brevo.com", 587, timeout=20) as server:
-            server.starttls()
-            server.login(BREVO_USER, BREVO_PASS)
-            server.send_message(msg)
+        url = "https://api.brevo.com/v3/smtp/email"
 
-        print("Email sent successfully via Brevo")
-        return "Success"
+        headers = {
+            "accept": "application/json",
+            "api-key": BREVO_API_KEY,
+            "content-type": "application/json"
+        }
+
+        payload = {
+            "sender": {
+                "name": "AI Emergency QR",
+                "email": "sonuyadava0506@gmail.com"
+            },
+            "to": [
+                {"email": to_email}
+            ],
+            "subject": "Emergency Medical QR Code",
+            "htmlContent": "<p>Your Emergency Medical QR is attached.</p>",
+            "attachment": [
+                {
+                    "content": encoded_file,
+                    "name": filename
+                }
+            ]
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        print("Brevo Response:", response.status_code, response.text)
+
+        if response.status_code == 201:
+            return "Success"
+        else:
+            return "Failed"
 
     except Exception as e:
         print("EMAIL ERROR:", e)
         return "Failed"
-
 
 # ---------------- EMAIL ROUTE ----------------
 @app.route("/send_email/<filename>", methods=["POST"])
@@ -227,4 +237,3 @@ def find_hospital():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
