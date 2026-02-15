@@ -149,7 +149,7 @@ def send_qr_email(to_email, filename):
 
         msg = EmailMessage()
         msg["Subject"] = "Emergency Medical QR Code"
-        msg["From"] = BREVO_USER
+        msg["From"] = "AI Emergency QR <sonuyadava0506@gmail.com>"
         msg["To"] = to_email
 
         msg.set_content(
@@ -165,7 +165,6 @@ def send_qr_email(to_email, filename):
                 filename=filename
             )
 
-        # 🔥 Brevo SMTP Settings
         with smtplib.SMTP("smtp-relay.brevo.com", 587, timeout=20) as server:
             server.starttls()
             server.login(BREVO_USER, BREVO_PASS)
@@ -177,6 +176,7 @@ def send_qr_email(to_email, filename):
     except Exception as e:
         print("EMAIL ERROR:", e)
         return "Failed"
+
 
 # ---------------- EMAIL ROUTE ----------------
 @app.route("/send_email/<filename>", methods=["POST"])
@@ -227,3 +227,4 @@ def find_hospital():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
