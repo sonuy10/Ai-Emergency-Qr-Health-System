@@ -93,6 +93,7 @@ def register():
     return render_template("register.html")
 
 # ---------------- GENERATE QR ----------------
+# ---------------- GENERATE QR ----------------
 @app.route("/generate_qr/<int:pid>")
 def generate_qr(pid):
     conn = sqlite3.connect(DB_PATH)
@@ -111,23 +112,31 @@ def generate_qr(pid):
     qr = qrcode.make(qr_url).convert("RGB")
 
     width, height = qr.size
-    new_img = Image.new("RGB", (width, height + 120), "white")
-    new_img.paste(qr, (0, 120))
+
+    # Extra space for BIG heading
+    new_img = Image.new("RGB", (width, height + 200), "white")
+    new_img.paste(qr, (0, 200))
 
     draw = ImageDraw.Draw(new_img)
 
-    # Bigger font
+    # Try large font
     try:
-        font = ImageFont.truetype("arial.ttf", 28)
+        font_big = ImageFont.truetype("arial.ttf", 48)
     except:
-        font = ImageFont.load_default()
+        font_big = ImageFont.load_default()
 
-    text = "🚨 EMERGENCY MEDICAL QR - SCAN IMMEDIATELY"
+    line1 = "🚨 EMERGENCY MEDICAL QR"
+    line2 = "SCAN IMMEDIATELY"
 
-    text_width = draw.textlength(text, font=font)
-    text_x = (width - text_width) / 2
+    # Center align line 1
+    w1 = draw.textlength(line1, font=font_big)
+    x1 = (width - w1) / 2
+    draw.text((x1, 50), line1, fill="red", font=font_big)
 
-    draw.text((text_x, 40), text, fill="red", font=font)
+    # Center align line 2
+    w2 = draw.textlength(line2, font=font_big)
+    x2 = (width - w2) / 2
+    draw.text((x2, 120), line2, fill="red", font=font_big)
 
     filename = f"Emergency_QR_{patient_name}.png"
     file_path = os.path.join(QR_FOLDER, filename)
@@ -140,6 +149,7 @@ def generate_qr(pid):
         patient_name=patient_name,
         created_time=created_time
     )
+
 
 # ---------------- DOWNLOAD QR ----------------
 @app.route("/download/<filename>")
@@ -244,3 +254,4 @@ def find_hospital():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
