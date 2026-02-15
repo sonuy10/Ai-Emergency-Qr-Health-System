@@ -16,9 +16,9 @@ QR_FOLDER = os.path.join(BASE_DIR, "static")
 
 app = Flask(__name__)
 
-# ---------------- EMAIL ENV VARIABLES ----------------
-EMAIL_ADDRESS = os.environ.get("EMAIL_USER")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASS")
+# ---------------- BREVO SMTP ENV VARIABLES ----------------
+BREVO_USER = os.environ.get("BREVO_SMTP_USER")   # usually your Brevo login email
+BREVO_PASS = os.environ.get("BREVO_SMTP_PASS")   # SMTP key from Brevo
 
 # ---------------- IST TIME FUNCTION ----------------
 def get_ist_time():
@@ -137,11 +137,11 @@ def download_file(filename):
     path = os.path.join(QR_FOLDER, filename)
     return send_file(path, as_attachment=True)
 
-# ---------------- EMAIL FUNCTION (FIXED + TIMEOUT) ----------------
+# ---------------- EMAIL FUNCTION (BREVO SMTP) ----------------
 def send_qr_email(to_email, filename):
 
-    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
-        print("Email credentials missing")
+    if not BREVO_USER or not BREVO_PASS:
+        print("Brevo SMTP not configured")
         return "Not Configured"
 
     try:
@@ -149,7 +149,7 @@ def send_qr_email(to_email, filename):
 
         msg = EmailMessage()
         msg["Subject"] = "Emergency Medical QR Code"
-        msg["From"] = EMAIL_ADDRESS
+        msg["From"] = BREVO_USER
         msg["To"] = to_email
 
         msg.set_content(
@@ -165,12 +165,13 @@ def send_qr_email(to_email, filename):
                 filename=filename
             )
 
-        # 🔥 Added timeout to prevent hanging
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
-            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            smtp.send_message(msg)
+        # 🔥 Brevo SMTP Settings
+        with smtplib.SMTP("smtp-relay.brevo.com", 587, timeout=20) as server:
+            server.starttls()
+            server.login(BREVO_USER, BREVO_PASS)
+            server.send_message(msg)
 
-        print("Email sent successfully")
+        print("Email sent successfully via Brevo")
         return "Success"
 
     except Exception as e:
