@@ -297,7 +297,7 @@ def edit(pid):
 
     conn.close()
 
-    return render_template("edit_form.html", patient=patient)
+    return render_template("edit_patient.html", patient=patient)
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
