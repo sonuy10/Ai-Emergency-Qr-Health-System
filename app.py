@@ -140,7 +140,7 @@ def download_file(filename):
     path=os.path.join(QR_FOLDER,filename)
     return send_file(path,as_attachment=True)
 
-# ---------------- SEND EMAIL ----------------
+# ---------------- EMAIL ----------------
 def send_qr_email(to_email,filename):
     if not BREVO_API_KEY:
         return"Not Configured"
@@ -152,7 +152,6 @@ def send_qr_email(to_email,filename):
     payload={"sender":{"name":"AI Emergency QR","email":"sonuyadava0506@gmail.com"},"to":[{"email":to_email}],"subject":"Emergency Medical QR Code","htmlContent":"<p>Your QR is attached</p>","attachment":[{"content":encoded,"name":filename}]}
     requests.post(url,json=payload,headers=headers)
 
-# ---------------- EMAIL ROUTE ----------------
 @app.route("/send_email/<filename>",methods=["POST"])
 def send_email(filename):
     email=request.form["email"]
@@ -170,19 +169,21 @@ def scan(pid):
     age=calculate_age(patient[2])
     return render_template("emergency_view.html",patient=patient,age=age)
 
-# ---------------- EDIT VERIFY ----------------
-@app.route("/verify/<int:pid>",methods=["POST"])
-def verify(pid):
-    password=request.form["password"]
-    conn=sqlite3.connect(DB_PATH)
-    cur=conn.cursor()
-    cur.execute("SELECT edit_password FROM patient WHERE id=?",(pid,))
-    real=cur.fetchone()[0]
-    conn.close()
-    if password==real:
-        return redirect("/edit/"+str(pid))
-    else:
-        return"Wrong Password"
+# ---------------- VERIFY EDIT PAGE ----------------
+@app.route("/verify_edit/<int:pid>",methods=["GET","POST"])
+def verify_edit(pid):
+    if request.method=="POST":
+        password=request.form["password"]
+        conn=sqlite3.connect(DB_PATH)
+        cur=conn.cursor()
+        cur.execute("SELECT edit_password FROM patient WHERE id=?",(pid,))
+        real=cur.fetchone()[0]
+        conn.close()
+        if password==real:
+            return redirect("/edit/"+str(pid))
+        else:
+            return render_template("verify_edit.html",pid=pid,error="Wrong Password")
+    return render_template("verify_edit.html",pid=pid)
 
 # ---------------- EDIT ----------------
 @app.route("/edit/<int:pid>",methods=["GET","POST"])
