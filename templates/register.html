@@ -31,7 +31,7 @@
                         <input type="text" name="name" class="form-control" required placeholder="Enter full name">
                     </div>
 
-                    <!-- DOB (REPLACED AGE) -->
+                    <!-- DOB -->
                     <div class="mb-3">
                         <label class="form-label">🎂 Date of Birth</label>
                         <input type="date" name="dob" class="form-control" required>
@@ -125,13 +125,36 @@
                         </div>
                     </div>
 
-                    <!-- Edit Password NEW -->
+                    <!-- Edit Password FINAL FIX -->
                     <div class="mb-4">
+
                         <label class="form-label">🔒 Edit Password</label>
-                        <input type="password" name="edit_password"
-                               class="form-control"
-                               required
-                               placeholder="Create password for future editing">
+
+                        <div class="input-group">
+
+                            <input type="password"
+                                   name="edit_password"
+                                   id="editPassword"
+                                   class="form-control"
+                                   required
+                                   minlength="6"
+                                   maxlength="15"
+                                   placeholder="Create password for future editing">
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    onclick="togglePassword()">
+
+                                👁
+
+                            </button>
+
+                        </div>
+
+                        <small class="text-muted">
+                            Password must be 6 to 15 characters
+                        </small>
+
                     </div>
 
                     <!-- Submit -->
@@ -154,6 +177,25 @@
         </div>
     </div>
 </div>
+
+
+<script>
+
+function togglePassword(){
+
+    var password=document.getElementById("editPassword");
+
+    if(password.type==="password"){
+        password.type="text";
+    }
+    else{
+        password.type="password";
+    }
+
+}
+
+</script>
+
 
 </body>
 </html>
