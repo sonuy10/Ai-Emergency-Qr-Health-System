@@ -6,100 +6,263 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        function updateClock(){
+            const now=new Date();
+            const options={
+                timeZone:'Asia/Kolkata',
+                hour:'2-digit',
+                minute:'2-digit',
+                second:'2-digit',
+                day:'2-digit',
+                month:'short',
+                year:'numeric'
+            };
+            document.getElementById("clock").innerHTML=
+            now.toLocaleString('en-IN',options);
+        }
+        setInterval(updateClock,1000);
+    </script>
+
 </head>
 
-<body class="bg-light">
+<body class="bg-light" onload="updateClock()">
+
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-dark bg-danger">
-    <div class="container">
-        <span class="navbar-brand mb-0 h1">
-            🚑 AI Emergency QR Health System
-        </span>
-    </div>
+
+<div class="container">
+
+<span class="navbar-brand">
+
+🚑 AI Emergency QR Health System
+
+</span>
+
+<span class="text-white small">
+
+🕒 <span id="clock"></span>
+
+</span>
+
+</div>
+
 </nav>
 
-<!-- HERO SECTION -->
+
+
+<!-- MAIN SECTION -->
 <div class="container mt-5">
-    <div class="row align-items-center">
 
-        <div class="col-md-6 mb-4">
-            <h1 class="text-danger fw-bold">
-                Emergency Medical Information <br>
-                <span class="text-dark">Just One QR Scan Away</span>
-            </h1>
+<div class="row align-items-center">
 
-            <p class="mt-3 text-muted">
-                This system allows users to generate an emergency QR code
-                containing critical medical information. In case of an accident
-                or medical emergency, anyone can scan the QR code to instantly
-                access patient details and AI-based risk analysis.
-            </p>
 
-            <div class="mt-4">
-                <a href="/register" class="btn btn-success btn-lg me-2">
-                    📝 Register & Generate QR
-                </a>
-            </div>
-        </div>
+<div class="col-md-6">
 
-        <div class="col-md-6 text-center">
-            <div class="card shadow p-4">
-                <h5 class="text-primary mb-3">🔍 How It Works</h5>
+<h1 class="text-danger fw-bold">
 
-                <ol class="text-start">
-                    <li>Register patient medical details</li>
-                    <li>Generate a unique Emergency QR Code</li>
-                    <li>User saves or prints the QR</li>
-                    <li>In emergency, QR is scanned by anyone</li>
-                    <li>Doctor gets instant patient info & AI risk level</li>
-                </ol>
-            </div>
-        </div>
+Emergency Medical Details
 
-    </div>
+</h1>
+
+<h4 class="text-dark mb-3">
+
+Accessible Instantly via QR Code
+
+</h4>
+
+
+<p class="text-muted">
+
+This system allows you to store important medical details inside a QR code.
+In case of emergency, doctors or anyone can scan the QR and instantly access:
+
+</p>
+
+
+<ul class="text-muted">
+
+<li>Patient Medical Information</li>
+
+<li>Emergency Contact Numbers</li>
+
+<li>AI Risk Level</li>
+
+<li>Hospital Finder</li>
+
+<li>Secure Edit with Password</li>
+
+</ul>
+
+
+
+<div class="mt-4">
+
+<a href="/register" class="btn btn-success btn-lg me-2">
+
+📝 Register Patient
+
+</a>
+
+
+<a href="/find_hospital" class="btn btn-danger btn-lg">
+
+🏥 Find Hospital
+
+</a>
+
 </div>
 
-<!-- FEATURES -->
-<div class="container mt-5">
-    <div class="row text-center">
 
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm p-3 h-100">
-                <h5 class="text-danger">⚡ Fast Access</h5>
-                <p class="text-muted small">
-                    Critical medical data is available instantly through QR scan.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm p-3 h-100">
-                <h5 class="text-danger">🤖 AI Risk Analysis</h5>
-                <p class="text-muted small">
-                    System analyzes patient age and diseases to show risk level.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm p-3 h-100">
-                <h5 class="text-danger">🌍 Cloud Based</h5>
-                <p class="text-muted small">
-                    QR works on any device from anywhere with internet access.
-                </p>
-            </div>
-        </div>
-
-    </div>
 </div>
+
+
+
+<div class="col-md-6">
+
+<div class="card shadow p-4">
+
+<h5 class="text-center text-primary">
+
+System Workflow
+
+</h5>
+
+<hr>
+
+
+<p>1️⃣ Register patient details</p>
+
+<p>2️⃣ Generate Emergency QR Code</p>
+
+<p>3️⃣ Save or Print QR Code</p>
+
+<p>4️⃣ Scan QR in Emergency</p>
+
+<p>5️⃣ Get Instant Medical Information</p>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- FEATURE SECTION -->
+<div class="container mt-5">
+
+<div class="row text-center">
+
+
+<div class="col-md-4 mb-3">
+
+<div class="card shadow-sm p-3">
+
+<h5 class="text-danger">
+
+⚡ Instant Access
+
+</h5>
+
+<p class="small text-muted">
+
+QR scan gives immediate patient info
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4 mb-3">
+
+<div class="card shadow-sm p-3">
+
+<h5 class="text-danger">
+
+🔒 Secure Editing
+
+</h5>
+
+<p class="small text-muted">
+
+Patient can update details using password
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4 mb-3">
+
+<div class="card shadow-sm p-3">
+
+<h5 class="text-danger">
+
+🏥 Emergency Support
+
+</h5>
+
+<p class="small text-muted">
+
+Find nearby hospitals instantly
+
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- ALERT -->
+<div class="container mt-4">
+
+<div class="alert alert-danger text-center">
+
+⚠ This system helps doctors access medical data quickly and save lives
+
+</div>
+
+</div>
+
+
 
 <!-- FOOTER -->
 <footer class="bg-dark text-light text-center mt-5 p-3">
-    <p class="mb-0 small">
-        © 2026 AI Emergency QR Health System | College Project
-    </p>
+
+<p class="mb-1 small">
+
+Developed by Sonu Yadav
+
+</p>
+
+<p class="mb-0 small">
+
+Final Year Project | AI Emergency QR Health System | 2026
+
+</p>
+
 </footer>
+
+
 
 </body>
 </html>
