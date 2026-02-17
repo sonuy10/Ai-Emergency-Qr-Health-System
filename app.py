@@ -234,10 +234,16 @@ def edit(pid):
     patient=cur.fetchone()
     conn.close()
     return render_template("edit_patient.html",patient=patient)
+# ---------------- FIND HOSPITAL ----------------
+@app.route("/find_hospital")
+def find_hospital():
+    return redirect("https://www.google.com/maps/search/hospital+near+me/")
+
 
 # ---------------- RUN ----------------
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
