@@ -191,9 +191,9 @@ def verify_edit(pid):
 
         else:
 
-            return render_template("verify_edit.html",error="Wrong Password")
+            return render_template("verify_edit.html",pid=pid,error="Wrong Password")
 
-    return render_template("verify_edit.html")
+    return render_template("verify_edit.html",pid=pid)
 
 # ---------------- EDIT ----------------
 @app.route("/edit/<int:pid>",methods=["GET","POST"])
@@ -239,4 +239,5 @@ def edit(pid):
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
