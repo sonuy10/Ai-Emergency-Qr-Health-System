@@ -32,7 +32,6 @@
                                required>
                     </div>
 
-
                     <!-- DOB -->
                     <div class="mb-3">
                         <label class="form-label">Date of Birth</label>
@@ -43,7 +42,6 @@
                                required>
                     </div>
 
-
                     <!-- Blood -->
                     <div class="mb-3">
                         <label class="form-label">Blood Group</label>
@@ -52,7 +50,6 @@
                                class="form-control"
                                value="{{ patient[3] }}">
                     </div>
-
 
                     <!-- Allergies -->
                     <div class="mb-3">
@@ -63,7 +60,6 @@
                                value="{{ patient[4] }}">
                     </div>
 
-
                     <!-- Diseases -->
                     <div class="mb-3">
                         <label class="form-label">Diseases</label>
@@ -72,7 +68,6 @@
                                class="form-control"
                                value="{{ patient[5] }}">
                     </div>
-
 
                     <!-- Medicines -->
                     <div class="mb-3">
@@ -83,7 +78,6 @@
                                value="{{ patient[6] }}">
                     </div>
 
-
                     <!-- Contact 1 -->
                     <div class="mb-3">
                         <label class="form-label">Contact 1</label>
@@ -93,9 +87,17 @@
                                value="{{ patient[7] }}">
                     </div>
 
+                    <!-- Relation 1 FIX -->
+                    <div class="mb-3">
+                        <label class="form-label">Relation 1</label>
+                        <input type="text"
+                               name="emergency_relation_1"
+                               class="form-control"
+                               value="{{ patient[8] }}">
+                    </div>
 
                     <!-- Contact 2 -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label class="form-label">Contact 2</label>
                         <input type="text"
                                name="emergency_contact_2"
@@ -103,6 +105,14 @@
                                value="{{ patient[9] }}">
                     </div>
 
+                    <!-- Relation 2 FIX -->
+                    <div class="mb-4">
+                        <label class="form-label">Relation 2</label>
+                        <input type="text"
+                               name="emergency_relation_2"
+                               class="form-control"
+                               value="{{ patient[10] }}">
+                    </div>
 
                     <div class="d-grid">
 
