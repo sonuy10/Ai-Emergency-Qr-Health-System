@@ -20,7 +20,7 @@
                     ✏️ Edit Patient Details
                 </h3>
 
-                <form method="POST">
+                <form method="POST" action="/edit/{{ patient[0] }}">
 
                     <!-- Name -->
                     <div class="mb-3">
@@ -42,13 +42,23 @@
                                required>
                     </div>
 
-                    <!-- Blood -->
+                    <!-- Blood Group -->
                     <div class="mb-3">
                         <label class="form-label">Blood Group</label>
-                        <input type="text"
-                               name="blood_group"
-                               class="form-control"
-                               value="{{ patient[3] }}">
+
+                        <select name="blood_group" class="form-select">
+
+                            <option value="A+" {% if patient[3]=='A+' %}selected{% endif %}>A+</option>
+                            <option value="A-" {% if patient[3]=='A-' %}selected{% endif %}>A-</option>
+                            <option value="B+" {% if patient[3]=='B+' %}selected{% endif %}>B+</option>
+                            <option value="B-" {% if patient[3]=='B-' %}selected{% endif %}>B-</option>
+                            <option value="AB+" {% if patient[3]=='AB+' %}selected{% endif %}>AB+</option>
+                            <option value="AB-" {% if patient[3]=='AB-' %}selected{% endif %}>AB-</option>
+                            <option value="O+" {% if patient[3]=='O+' %}selected{% endif %}>O+</option>
+                            <option value="O-" {% if patient[3]=='O-' %}selected{% endif %}>O-</option>
+
+                        </select>
+
                     </div>
 
                     <!-- Allergies -->
@@ -80,38 +90,54 @@
 
                     <!-- Contact 1 -->
                     <div class="mb-3">
-                        <label class="form-label">Contact 1</label>
+                        <label class="form-label">Contact Number 1</label>
                         <input type="text"
                                name="emergency_contact_1"
                                class="form-control"
                                value="{{ patient[7] }}">
                     </div>
 
-                    <!-- Relation 1 FIX -->
+                    <!-- Relation 1 -->
                     <div class="mb-3">
                         <label class="form-label">Relation 1</label>
-                        <input type="text"
-                               name="emergency_relation_1"
-                               class="form-control"
-                               value="{{ patient[8] }}">
+
+                        <select name="emergency_relation_1" class="form-select">
+
+                            <option value="Father" {% if patient[8]=='Father' %}selected{% endif %}>Father</option>
+                            <option value="Mother" {% if patient[8]=='Mother' %}selected{% endif %}>Mother</option>
+                            <option value="Brother" {% if patient[8]=='Brother' %}selected{% endif %}>Brother</option>
+                            <option value="Sister" {% if patient[8]=='Sister' %}selected{% endif %}>Sister</option>
+                            <option value="Spouse" {% if patient[8]=='Spouse' %}selected{% endif %}>Spouse</option>
+                            <option value="Friend" {% if patient[8]=='Friend' %}selected{% endif %}>Friend</option>
+
+                        </select>
+
                     </div>
 
                     <!-- Contact 2 -->
                     <div class="mb-3">
-                        <label class="form-label">Contact 2</label>
+                        <label class="form-label">Contact Number 2</label>
                         <input type="text"
                                name="emergency_contact_2"
                                class="form-control"
                                value="{{ patient[9] }}">
                     </div>
 
-                    <!-- Relation 2 FIX -->
+                    <!-- Relation 2 -->
                     <div class="mb-4">
                         <label class="form-label">Relation 2</label>
-                        <input type="text"
-                               name="emergency_relation_2"
-                               class="form-control"
-                               value="{{ patient[10] }}">
+
+                        <select name="emergency_relation_2" class="form-select">
+
+                            <option value="">Select</option>
+                            <option value="Father" {% if patient[10]=='Father' %}selected{% endif %}>Father</option>
+                            <option value="Mother" {% if patient[10]=='Mother' %}selected{% endif %}>Mother</option>
+                            <option value="Brother" {% if patient[10]=='Brother' %}selected{% endif %}>Brother</option>
+                            <option value="Sister" {% if patient[10]=='Sister' %}selected{% endif %}>Sister</option>
+                            <option value="Friend" {% if patient[10]=='Friend' %}selected{% endif %}>Friend</option>
+
+                        </select>
+
                     </div>
 
                     <div class="d-grid">
