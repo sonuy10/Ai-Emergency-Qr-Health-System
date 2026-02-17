@@ -169,21 +169,31 @@ def scan(pid):
     age=calculate_age(patient[2])
     return render_template("emergency_view.html",patient=patient,age=age)
 
-# ---------------- VERIFY EDIT PAGE ----------------
+# ---------------- VERIFY EDIT PASSWORD PAGE ----------------
 @app.route("/verify_edit/<int:pid>",methods=["GET","POST"])
 def verify_edit(pid):
+
     if request.method=="POST":
+
         password=request.form["password"]
+
         conn=sqlite3.connect(DB_PATH)
         cur=conn.cursor()
+
         cur.execute("SELECT edit_password FROM patient WHERE id=?",(pid,))
         real=cur.fetchone()[0]
+
         conn.close()
+
         if password==real:
+
             return redirect("/edit/"+str(pid))
+
         else:
-            return render_template("verify_edit.html",pid=pid,error="Wrong Password")
-    return render_template("verify_edit.html",pid=pid)
+
+            return render_template("verify_edit.html",error="Wrong Password")
+
+    return render_template("verify_edit.html")
 
 # ---------------- EDIT ----------------
 @app.route("/edit/<int:pid>",methods=["GET","POST"])
@@ -229,3 +239,4 @@ def edit(pid):
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
