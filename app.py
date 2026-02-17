@@ -65,8 +65,15 @@ def index():
 @app.route("/register",methods=["GET","POST"])
 def register():
     if request.method=="POST":
+
+        edit_password=request.form["edit_password"]
+
+        if len(edit_password)<6 or len(edit_password)>15:
+            return "Password must be 6 to 15 characters"
+
         conn=sqlite3.connect(DB_PATH)
         cur=conn.cursor()
+
         cur.execute("""
             INSERT INTO patient
             (name,dob,blood_group,allergies,diseases,medicines,
@@ -85,13 +92,16 @@ def register():
             request.form["emergency_relation_1"],
             request.form.get("emergency_contact_2"),
             request.form.get("emergency_relation_2"),
-            request.form["edit_password"],
+            edit_password,
             get_ist_time()
         ))
+
         conn.commit()
         patient_id=cur.lastrowid
         conn.close()
+
         return redirect(url_for("generate_qr",pid=patient_id))
+
     return render_template("register.html")
 
 # ---------------- GENERATE QR ----------------
@@ -244,6 +254,7 @@ def find_hospital():
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
