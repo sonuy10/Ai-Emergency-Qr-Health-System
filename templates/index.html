@@ -1,277 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>AI Emergency QR Health System</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <script>
-
-        function updateClock(){
-
-            const now=new Date();
-
-            const options={
-                timeZone:'Asia/Kolkata',
-                hour:'2-digit',
-                minute:'2-digit',
-                second:'2-digit',
-                day:'2-digit',
-                month:'short',
-                year:'numeric'
-            };
-
-            document.getElementById("clock").innerHTML=
-            now.toLocaleString('en-IN',options);
-
-        }
-
-        setInterval(updateClock,1000);
-
-    </script>
-
+<meta charset="UTF-8">
+<title>AI Emergency QR Health System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
-<body class="bg-light" onload="updateClock()">
-
-
-<!-- NAVBAR -->
+<body class="bg-light">
 <nav class="navbar navbar-dark bg-danger">
-
-    <div class="container">
-
-        <span class="navbar-brand mb-0 h1">
-            🚑 AI Emergency QR Health System
-        </span>
-
-        <span class="text-white small">
-            🕒 <span id="clock"></span>
-        </span>
-
-    </div>
-
+<div class="container">
+<span class="navbar-brand mb-0 h1">🚑 AI Emergency QR Health System</span>
+</div>
 </nav>
-
-
-
-<!-- HERO SECTION -->
 <div class="container mt-5">
-
-    <div class="row align-items-center">
-
-
-        <div class="col-md-6 mb-4">
-
-
-            <h1 class="text-danger fw-bold">
-
-                Save Life With One QR Scan
-
-            </h1>
-
-
-            <h4 class="text-dark">
-
-                Instant Medical Information Access
-
-            </h4>
-
-
-            <p class="mt-3 text-muted">
-
-                This system stores patient medical details inside a QR code.
-                During emergency, anyone can scan and immediately see
-                patient information, emergency contacts, and medical history.
-
-            </p>
-
-
-            <div class="alert alert-warning">
-
-                ⚠ In accident cases, this QR can help doctors take faster decisions
-
-            </div>
-
-
-
-            <div class="mt-4">
-
-                <a href="/register"
-                   class="btn btn-success btn-lg">
-
-                    📝 Register Patient & Generate QR
-
-                </a>
-
-            </div>
-
-
-        </div>
-
-
-
-        <div class="col-md-6 text-center">
-
-
-            <div class="card shadow p-4">
-
-
-                <h5 class="text-primary mb-3">
-
-                    📊 System Features
-
-                </h5>
-
-
-                <ul class="text-start">
-
-                    <li>QR based medical profile</li>
-
-                    <li>Emergency contact calling</li>
-
-                    <li>Password protected edit</li>
-
-                    <li>Auto age calculation</li>
-
-                    <li>Email QR delivery</li>
-
-                    <li>Cloud access anytime</li>
-
-                </ul>
-
-
-            </div>
-
-
-        </div>
-
-
-    </div>
-
+<div class="row align-items-center">
+<div class="col-md-6">
+<h1 class="text-danger fw-bold">Your Identity. Your Health. Your QR.</h1>
+<p class="text-muted mt-3">
+This system creates a personal QR code that stores important information safely. When scanned, it helps others understand and support the person instantly in different real-life situations.
+</p>
+<a href="/register" class="btn btn-success btn-lg mt-3">📝 Create Your Emergency QR</a>
 </div>
-
-
-
-<!-- HOW SYSTEM HELPS -->
+<div class="col-md-6">
+<div class="card shadow p-4">
+<h5 class="text-primary text-center mb-3">🌟 Where This Helps</h5>
+<ul class="small text-muted">
+<li>Helps identify and support blind persons</li>
+<li>Useful for people who cannot speak</li>
+<li>Helpful for elderly people living alone</li>
+<li>Supports people with memory or mental health conditions</li>
+<li>Provides medical info when needed</li>
+<li>Allows quick contact with family members</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 <div class="container mt-5">
-
-
-    <div class="card shadow p-4">
-
-
-        <h4 class="text-center text-danger mb-3">
-
-            ❤️ How This Project Helps
-
-        </h4>
-
-
-        <div class="row text-center">
-
-
-            <div class="col-md-4">
-
-                <h5>🚑 Accident Case</h5>
-
-                <p class="small text-muted">
-
-                    Doctor scans QR and sees patient details instantly
-
-                </p>
-
-            </div>
-
-
-
-            <div class="col-md-4">
-
-                <h5>📞 Contact Family</h5>
-
-                <p class="small text-muted">
-
-                    Call emergency contact directly from system
-
-                </p>
-
-            </div>
-
-
-
-            <div class="col-md-4">
-
-                <h5>⚡ Faster Treatment</h5>
-
-                <p class="small text-muted">
-
-                    Helps doctor take quick medical decisions
-
-                </p>
-
-            </div>
-
-
-        </div>
-
-
-    </div>
-
-
+<div class="row text-center">
+<div class="col-md-4 mb-3">
+<div class="card shadow-sm p-3 h-100">
+<h5 class="text-danger">🔒 Secure</h5>
+<p class="small text-muted">Edit access is protected with password</p>
 </div>
-
-
-
-<!-- PROJECT INFO -->
-<div class="container mt-5">
-
-
-    <div class="card shadow-sm p-3 text-center">
-
-
-        <h5 class="text-primary">
-
-            🎓 Final Year Major Project
-
-        </h5>
-
-
-        <p class="small text-muted mb-0">
-
-            Developed using Python Flask, SQLite, QR Technology and Cloud Deployment
-
-        </p>
-
-
-    </div>
-
-
 </div>
-
-
-
-<!-- FOOTER -->
+<div class="col-md-4 mb-3">
+<div class="card shadow-sm p-3 h-100">
+<h5 class="text-danger">📱 Easy to Use</h5>
+<p class="small text-muted">Works with any smartphone QR scanner</p>
+</div>
+</div>
+<div class="col-md-4 mb-3">
+<div class="card shadow-sm p-3 h-100">
+<h5 class="text-danger">🌍 Always Available</h5>
+<p class="small text-muted">Accessible anytime and anywhere</p>
+</div>
+</div>
+</div>
+</div>
 <footer class="bg-dark text-light text-center mt-5 p-3">
-
-
-    <p class="mb-1 small">
-
-        Developed by Sonu Yadav
-
-    </p>
-
-
-    <p class="mb-0 small">
-
-        AI Emergency QR Health System | 2026
-
-    </p>
-
-
+<span class="small">AI Emergency QR Health System | Developed by Sonu Yadav</span>
 </footer>
-
-
-
 </body>
-
 </html>
