@@ -11,12 +11,10 @@
         function callSelectedContact() {
             const select=document.getElementById("contactSelect");
             const number=select.value;
-
             if(!number){
                 alert("Please select an emergency contact");
                 return;
             }
-
             window.location.href="tel:"+number;
         }
     </script>
@@ -34,10 +32,14 @@
                 🚑 Emergency Patient Information
             </h2>
 
-            <a href="/verify_edit/{{ patient[0] }}" class="btn btn-warning">
-                ✏ Edit Details
-            </a>
-
+            <div class="text-end">
+                <a href="/verify_edit/{{ patient[0] }}" class="btn btn-warning mb-2">
+                    ✏ Edit Details
+                </a>
+                <div class="small text-muted">
+                    📧 Registered Email: {{ patient[12] }}
+                </div>
+            </div>
 
         </div>
 
@@ -78,12 +80,12 @@
 
         <!-- DATE FIXED -->
         <div class="alert alert-secondary mt-3">
-            <strong>🕒 Data Generated On:</strong> {{ patient[12] }}
+            <strong>🕒 Data Generated On:</strong> {{ patient[13] }}
         </div>
 
         <hr>
 
-        <!-- AI Risk Analysis (UNCHANGED) -->
+        <!-- AI Risk Analysis -->
         <h4 class="mb-3">🤖 AI Risk Analysis</h4>
 
         {% if risk == "HIGH" %}
