@@ -23,7 +23,7 @@
                     Fill correct medical details to generate Emergency QR Code
                 </p>
 
-                <form method="POST">
+                <form method="POST" autocomplete="off">
 
                     <!-- Patient Name -->
                     <div class="mb-3">
@@ -34,7 +34,7 @@
                     <!-- Email NEW (FOR FORGOT PASSWORD) -->
                     <div class="mb-3">
                         <label class="form-label">📧 Email Address</label>
-                        <input type="email" name="email" class="form-control" required placeholder="Enter email for password recovery">
+                        <input type="email" name="email" class="form-control" required maxlength="100" placeholder="Enter email for password recovery">
                     </div>
 
                     <!-- DOB -->
@@ -184,7 +184,6 @@
     </div>
 </div>
 
-
 <script>
 
 function togglePassword(){
@@ -201,7 +200,6 @@ function togglePassword(){
 }
 
 </script>
-
 
 </body>
 </html>
