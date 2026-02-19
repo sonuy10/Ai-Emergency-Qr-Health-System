@@ -95,6 +95,7 @@ def register():
             request.form.get("emergency_contact_2"),
             request.form.get("emergency_relation_2"),
             edit_password,
+            request.form["email"],
             get_ist_time()
         ))
 
@@ -299,6 +300,7 @@ def reset(pid):
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
