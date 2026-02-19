@@ -48,6 +48,7 @@ def init_db():
             emergency_contact_2 TEXT,
             emergency_relation_2 TEXT,
             edit_password TEXT,
+            email TEXT,
             created_at TEXT
         )
     """)
@@ -79,8 +80,9 @@ def register():
             (name,dob,blood_group,allergies,diseases,medicines,
             emergency_contact_1,emergency_relation_1,
             emergency_contact_2,emergency_relation_2,
-            edit_password,created_at)
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+            edit_password,email,created_at)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+
         """,(
             request.form["name"],
             request.form["dob"],
@@ -249,11 +251,55 @@ def edit(pid):
 def find_hospital():
     return redirect("https://www.google.com/maps/search/hospital+near+me/")
 
+# ---------------- FORGOT PASSWORD ----------------
+@app.route("/forgot",methods=["GET","POST"])
+def forgot():
+
+    if request.method=="POST":
+
+        email=request.form["email"]
+
+        conn=sqlite3.connect(DB_PATH)
+        cur=conn.cursor()
+
+        cur.execute("SELECT id FROM patient WHERE email=?",(email,))
+        user=cur.fetchone()
+
+        conn.close()
+
+        if user:
+            return redirect("/reset/"+str(user[0]))
+        else:
+            return render_template("forgot_password.html",error="Email not found")
+
+    return render_template("forgot_password.html")
+
+
+# ---------------- RESET PASSWORD ----------------
+@app.route("/reset/<int:pid>",methods=["GET","POST"])
+def reset(pid):
+
+    if request.method=="POST":
+
+        new_pass=request.form["password"]
+
+        conn=sqlite3.connect(DB_PATH)
+        cur=conn.cursor()
+
+        cur.execute("UPDATE patient SET edit_password=? WHERE id=?",(new_pass,pid))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/scan/"+str(pid))
+
+    return render_template("reset_password.html")
 
 # ---------------- RUN ----------------
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
