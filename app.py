@@ -48,7 +48,7 @@ def init_db():
             emergency_contact_2 TEXT,
             emergency_relation_2 TEXT,
             edit_password TEXT,
-            email TEXT,
+            email TEXT UNIQUE,
             created_at TEXT
         )
     """)
@@ -300,6 +300,7 @@ def reset(pid):
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
