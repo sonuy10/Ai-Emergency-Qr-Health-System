@@ -154,17 +154,50 @@ def download_file(filename):
     return send_file(path,as_attachment=True)
 
 # ---------------- EMAIL ----------------
-def send_qr_email(to_email,filename):
-    if not BREVO_API_KEY:
-        return"Not Configured"
-    path=os.path.join(QR_FOLDER,filename)
-    with open(path,"rb")as f:
-        encoded=base64.b64encode(f.read()).decode()
-    url="https://api.brevo.com/v3/smtp/email"
-    headers={"accept":"application/json","api-key":BREVO_API_KEY,"content-type":"application/json"}
-    payload={"sender":{"name":"AI Emergency QR","email":"sonuyadava0506@gmail.com"},"to":[{"email":to_email}],"subject":"Emergency Medical QR Code","htmlContent":"<p>Your QR is attached</p>","attachment":[{"content":encoded,"name":filename}]}
-    requests.post(url,json=payload,headers=headers)
+def send_qr_email(to_email,filename=None,custom_message=None,custom_subject=None):
 
+    if not BREVO_API_KEY:
+        return
+
+    url="https://api.brevo.com/v3/smtp/email"
+
+    headers={
+        "accept":"application/json",
+        "api-key":BREVO_API_KEY,
+        "content-type":"application/json"
+    }
+
+    if custom_message:
+
+        payload={
+            "sender":{
+                "name":"AI Emergency QR",
+                "email":"sonuyadava0506@gmail.com"
+            },
+            "to":[{"email":to_email}],
+            "subject":custom_subject,
+            "htmlContent":f"<pre>{custom_message}</pre>"
+        }
+
+    else:
+
+        path=os.path.join(QR_FOLDER,filename)
+
+        with open(path,"rb")as f:
+            encoded=base64.b64encode(f.read()).decode()
+
+        payload={
+            "sender":{
+                "name":"AI Emergency QR",
+                "email":"sonuyadava0506@gmail.com"
+            },
+            "to":[{"email":to_email}],
+            "subject":"Emergency Medical QR Code",
+            "htmlContent":"<p>Your QR is attached</p>",
+            "attachment":[{"content":encoded,"name":filename}]
+        }
+
+    requests.post(url,json=payload,headers=headers)
 @app.route("/send_email/<filename>",methods=["POST"])
 def send_email(filename):
     email=request.form["email"]
@@ -263,43 +296,41 @@ def forgot():
         conn=sqlite3.connect(DB_PATH)
         cur=conn.cursor()
 
-        cur.execute("SELECT id FROM patient WHERE email=?",(email,))
+        cur.execute("SELECT edit_password FROM patient WHERE email=?",(email,))
         user=cur.fetchone()
 
         conn.close()
 
         if user:
-            return redirect("/reset/"+str(user[0]))
+
+            password=user[0]
+
+            subject="Emergency QR Edit Password Recovery"
+
+            content=f"""
+            Your Edit Password is:
+
+            {password}
+
+            Use this password to edit your Emergency QR details.
+
+            - AI Emergency QR Health System
+            """
+
+            send_qr_email(email,"",custom_message=content,custom_subject=subject)
+
+            return render_template("forgot_password.html",success="Password sent to your email")
+
         else:
+
             return render_template("forgot_password.html",error="Email not found")
 
     return render_template("forgot_password.html")
-
-
-# ---------------- RESET PASSWORD ----------------
-@app.route("/reset/<int:pid>",methods=["GET","POST"])
-def reset(pid):
-
-    if request.method=="POST":
-
-        new_pass=request.form["password"]
-
-        conn=sqlite3.connect(DB_PATH)
-        cur=conn.cursor()
-
-        cur.execute("UPDATE patient SET edit_password=? WHERE id=?",(new_pass,pid))
-
-        conn.commit()
-        conn.close()
-
-        return redirect("/scan/"+str(pid))
-
-    return render_template("reset_password.html")
-
 # ---------------- RUN ----------------
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
