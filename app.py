@@ -296,30 +296,31 @@ def forgot():
         conn=sqlite3.connect(DB_PATH)
         cur=conn.cursor()
 
-        cur.execute("SELECT edit_password FROM patient WHERE email=?",(email,))
+        cur.execute("SELECT id,edit_password FROM patient WHERE email=?",(email,))
         user=cur.fetchone()
 
         conn.close()
 
         if user:
 
-            password=user[0]
+            pid=user[0]
+            password=user[1]
 
             subject="Emergency QR Edit Password Recovery"
 
             content=f"""
-            Your Edit Password is:
+Your Edit Password is:
 
-            {password}
+{password}
 
-            Use this password to edit your Emergency QR details.
+Use this password to edit your Emergency QR details.
 
-            - AI Emergency QR Health System
-            """
+- AI Emergency QR Health System
+"""
 
             send_qr_email(email,"",custom_message=content,custom_subject=subject)
 
-            return render_template("forgot_password.html",success="Password sent to your email")
+            return render_template("forgot_password.html",success="Password sent to your email",pid=pid)
 
         else:
 
@@ -330,6 +331,7 @@ def forgot():
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
     app.run(host="0.0.0.0",port=port)
+
 
 
 
